@@ -130,7 +130,7 @@ public class MainActivity extends Activity implements
 
     boolean postStatus = false;
     try {
-      URL url = new URL("http://localhost:9000/post");
+      URL url = new URL("http://logstr.herokuapp.com/post");
       HttpURLConnection conn = (HttpURLConnection) url.openConnection();
       conn.setRequestMethod("POST");
       conn.setDoOutput(true);
