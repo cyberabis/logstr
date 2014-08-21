@@ -18,6 +18,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -130,9 +131,14 @@ public class MainActivity extends Activity implements
 
     boolean postStatus = false;
     try {
+      Log.d("MainActivity", "Attempting post");
       URL url = new URL("http://logstr.herokuapp.com/post");
+      StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+          .permitAll().build();
+      StrictMode.setThreadPolicy(policy);
       HttpURLConnection conn = (HttpURLConnection) url.openConnection();
       conn.setRequestMethod("POST");
+      conn.setRequestProperty("Content-Type", "application/json");
       conn.setDoOutput(true);
       // Starts the query
       // conn.connect();
@@ -145,7 +151,7 @@ public class MainActivity extends Activity implements
       if (responseCode == 200)
         postStatus = true;
     } catch (Exception e) {
-      Log.d("MainActivity", "Unable to connect to server for post");
+      Log.d("MainActivity", "Unable to connect to server for post: " + e);
     }
     return postStatus;
   }
