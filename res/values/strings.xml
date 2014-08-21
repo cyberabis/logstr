@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Logstr</string>
+    <string name="edit_message">(Optional) Log name</string>
+	<string name="button_send">Start</string>
+	<string name="button_sync">Sync</string>
+    <string name="action_settings">Settings</string>
+    
+</resources>
