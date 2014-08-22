@@ -12,6 +12,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.location.LocationRequest;
 
 import android.app.Activity;
 import android.content.Context;
@@ -34,11 +35,24 @@ public class MainActivity extends Activity implements
   private static Thread thread;
   private static LocationClient mLocationClient;
   private LogstrDataSource datasource;
+  private static LocationRequest mLocationRequest;
+
+  private static final int MILLISECONDS_PER_SECOND = 1000;
+  public static final int UPDATE_INTERVAL_IN_SECONDS = 2;
+  private static final long UPDATE_INTERVAL = MILLISECONDS_PER_SECOND
+      * UPDATE_INTERVAL_IN_SECONDS;
+  private static final int FASTEST_INTERVAL_IN_SECONDS = 1;
+  private static final long FASTEST_INTERVAL = MILLISECONDS_PER_SECOND
+      * FASTEST_INTERVAL_IN_SECONDS;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+    mLocationRequest = LocationRequest.create();
+    mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    mLocationRequest.setInterval(UPDATE_INTERVAL);
+    mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
     mLocationClient = new LocationClient(this, this, this);
     datasource = new LogstrDataSource(this);
     datasource.open();
@@ -67,18 +81,6 @@ public class MainActivity extends Activity implements
       return true;
     }
     return super.onOptionsItemSelected(item);
-  }
-
-  @Override
-  protected void onResume() {
-    datasource.open();
-    super.onResume();
-  }
-
-  @Override
-  protected void onPause() {
-    datasource.close();
-    super.onPause();
   }
 
   /** Called when the user clicks the Sync button */
@@ -187,8 +189,10 @@ public class MainActivity extends Activity implements
         if (logName == null) {
           logName = "";
         }
-        thread = new Thread(new Logger(mLocationClient, logName + "."
-            + System.currentTimeMillis(), datasource));
+        Logger logger = new Logger(mLocationClient, logName + "."
+            + System.currentTimeMillis(), datasource);
+        mLocationClient.requestLocationUpdates(mLocationRequest, logger);
+        thread = new Thread(logger);
         thread.start();
         running = true;
         editText.setEnabled(false);
