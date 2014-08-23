@@ -98,6 +98,8 @@ public class MainActivity extends Activity implements
         for (io.thedal.Log log : logs) {
           list.add(log.getLog());
         }
+        Log.i("MainActivity", "No. of logs to sync: " + logs.size());
+        Log.i("MainActivity", "Last log: " + logs.get(logs.size() - 1));
         JSONArray jsArray = new JSONArray(list);
         Log.i("MainActivity", "Sending logs to server: " + jsArray);
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
